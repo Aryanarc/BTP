@@ -1,0 +1,76 @@
+{
+  "type": "FeatureCollection",
+  "name": "sample_building",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "indoor": "room", "level": "0", "ref": "A-101", "name": "Room A-101" },
+      "geometry": { "type": "Polygon", "coordinates": [[[0,0],[4,0],[4,4],[0,4],[0,0]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "indoor": "room", "level": "0", "ref": "B-102", "name": "Room B-102" },
+      "geometry": { "type": "Polygon", "coordinates": [[[5,0],[9,0],[9,4],[5,4],[5,0]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "indoor": "room", "level": "0", "amenity": "library", "name": "Library" },
+      "geometry": { "type": "Polygon", "coordinates": [[[10,0],[16,0],[16,6],[10,6],[10,0]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "indoor": "room", "level": "0", "amenity": "toilets", "name": "Restroom B" },
+      "geometry": { "type": "Polygon", "coordinates": [[[5,5],[7,5],[7,7],[5,7],[5,5]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "indoor": "corridor", "level": "0", "name": "Corridor Floor 0" },
+      "geometry": { "type": "LineString", "coordinates": [[0,4.5],[16,4.5]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "highway": "elevator", "level": "0;1", "name": "Elevator 1" },
+      "geometry": { "type": "Point", "coordinates": [8, 4.5] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "stairs": "yes", "level": "0;1", "name": "Stairwell 1" },
+      "geometry": { "type": "Point", "coordinates": [12, 4.5] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "amenity": "exit", "level": "0", "name": "Main Exit" },
+      "geometry": { "type": "Point", "coordinates": [0, 4.5] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "indoor": "room", "level": "1", "ref": "C-301", "name": "Lab C-301" },
+      "geometry": { "type": "Polygon", "coordinates": [[[10,0],[15,0],[15,5],[10,5],[10,0]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "indoor": "room", "level": "1", "ref": "C-302", "name": "Lab C-302" },
+      "geometry": { "type": "Polygon", "coordinates": [[[0,0],[4,0],[4,4],[0,4],[0,0]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "indoor": "room", "level": "1", "amenity": "toilets", "name": "Restroom C" },
+      "geometry": { "type": "Polygon", "coordinates": [[[5,0],[7,0],[7,2],[5,2],[5,0]]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "indoor": "corridor", "level": "1", "name": "Corridor Floor 1" },
+      "geometry": { "type": "LineString", "coordinates": [[0,4.5],[15,4.5]] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "highway": "elevator", "level": "0;1", "name": "Elevator 1" },
+      "geometry": { "type": "Point", "coordinates": [8, 4.5] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "stairs": "yes", "level": "0;1", "name": "Stairwell 1" },
+      "geometry": { "type": "Point", "coordinates": [12, 4.5] }
+    }
+  ]
+}
