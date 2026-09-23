@@ -3,6 +3,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 const SOURCE_ID = "indoor-data";
+const ROUTE_SOURCE_ID = "route-data";
 
 // Blank style — this is an indoor plan, not a georeferenced basemap, so we
 // just give MapLibre a flat background to draw the floor plan on.
@@ -71,7 +72,40 @@ function boundsOf(geojson) {
   return any ? bounds : null;
 }
 
-export default function MapView({ geojson }) {
+// Turns a /route API response (per-floor coordinate segments) into a
+// GeoJSON FeatureCollection: one LineString per floor the route crosses,
+// plus start/end Point markers, so it can be rendered with the same
+// source/layer/filter machinery as the rest of the map.
+function routeToGeojson(route) {
+  if (!route || !route.segments || route.segments.length === 0) return null;
+
+  const features = route.segments.map((seg) => ({
+    type: "Feature",
+    properties: { level: seg.level, role: "path" },
+    geometry: { type: "LineString", coordinates: seg.coordinates },
+  }));
+
+  const first = route.segments[0];
+  const last = route.segments[route.segments.length - 1];
+  if (first.coordinates.length > 0) {
+    features.push({
+      type: "Feature",
+      properties: { level: first.level, role: "start" },
+      geometry: { type: "Point", coordinates: first.coordinates[0] },
+    });
+  }
+  if (last.coordinates.length > 0) {
+    features.push({
+      type: "Feature",
+      properties: { level: last.level, role: "end" },
+      geometry: { type: "Point", coordinates: last.coordinates[last.coordinates.length - 1] },
+    });
+  }
+
+  return { type: "FeatureCollection", features };
+}
+
+export default function MapView({ geojson, route }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const [levels, setLevels] = useState([]);
@@ -191,6 +225,49 @@ export default function MapView({ geojson }) {
     else map.once("load", apply);
   }, [geojson]);
 
+  // Draw / replace the route overlay whenever a new route comes in.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const apply = () => {
+      const data = routeToGeojson(route) || { type: "FeatureCollection", features: [] };
+
+      if (map.getLayer("route-line")) map.removeLayer("route-line");
+      if (map.getLayer("route-points")) map.removeLayer("route-points");
+      if (map.getSource(ROUTE_SOURCE_ID)) map.removeSource(ROUTE_SOURCE_ID);
+
+      map.addSource(ROUTE_SOURCE_ID, { type: "geojson", data });
+
+      map.addLayer({
+        id: "route-line",
+        type: "line",
+        source: ROUTE_SOURCE_ID,
+        filter: ["==", ["get", "role"], "path"],
+        layout: { "line-cap": "round", "line-join": "round" },
+        paint: { "line-color": "#1a73e8", "line-width": 4 },
+      });
+
+      map.addLayer({
+        id: "route-points",
+        type: "circle",
+        source: ROUTE_SOURCE_ID,
+        filter: ["!=", ["get", "role"], "path"],
+        paint: {
+          "circle-radius": 8,
+          "circle-color": ["match", ["get", "role"], "start", "#1e8e3e", "end", "#d93025", "#1a73e8"],
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#ffffff",
+        },
+      });
+
+      if (activeLevel !== null) applyLevelFilter(map, activeLevel);
+    };
+
+    if (map.isStyleLoaded()) apply();
+    else map.once("load", apply);
+  }, [route]);
+
   // Re-filter layers when the active floor changes.
   useEffect(() => {
     const map = mapRef.current;
@@ -215,9 +292,11 @@ export default function MapView({ geojson }) {
       "corridors-line": ["any", ["==", ["geometry-type"], "LineString"], ["==", ["geometry-type"], "MultiLineString"]],
       "poi-points": ["==", ["geometry-type"], "Point"],
       "poi-labels": ["==", ["geometry-type"], "Point"],
+      "route-line": ["==", ["get", "role"], "path"],
+      "route-points": ["!=", ["get", "role"], "path"],
     };
     Object.entries(baseFilters).forEach(([layerId, baseFilter]) => {
-      map.setFilter(layerId, ["all", baseFilter, levelFilter]);
+      if (map.getLayer(layerId)) map.setFilter(layerId, ["all", baseFilter, levelFilter]);
     });
   }
 

@@ -106,7 +106,8 @@ body {
 }
 
 .upload-widget,
-.query-box {
+.query-box,
+.route-panel {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -126,12 +127,22 @@ body {
   border-radius: 6px;
 }
 
+.route-panel select {
+  font-size: 0.85rem;
+  padding: 7px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+}
+
 .query-box button,
+.route-panel button,
 .upload-widget input[type="file"] {
   font-size: 0.85rem;
 }
 
-.query-box button {
+.query-box button,
+.route-panel button {
   align-self: flex-start;
   padding: 8px 14px;
   border: none;
@@ -141,9 +152,18 @@ body {
   cursor: pointer;
 }
 
-.query-box button:disabled {
+.query-box button:disabled,
+.route-panel button:disabled {
   background: #b7c8e8;
   cursor: not-allowed;
+}
+
+.route-steps {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .info-box,
